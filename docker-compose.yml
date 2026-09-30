@@ -1,0 +1,29 @@
+# SecureBlog v2 — authentification JWT
+# Lancer : docker compose up --build
+# Ouvrir : http://localhost:8080
+# Le conteneur Nginx écoute sur le port 80.
+# Le port hôte est 8080 : le port 80 est déjà utilisé par WAMP sur cette machine.
+
+services:
+  server:
+    build: ./server
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: "4000"
+      NODE_ENV: production
+      JWT_SECRET: "secureblog-v2-lab-jwt-secret"
+      CLIENT_URL: "http://localhost:8080"
+      DATA_DIR: "/app/data"
+    volumes:
+      - ./server/data:/app/data
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:4000
+    ports:
+      - "8080:80"
+    depends_on:
+      - server
